@@ -25,6 +25,7 @@ import { FocusService } from './plus/focus/focusService';
 import { AccountAuthenticationProvider } from './plus/gk/authenticationProvider';
 import { ServerConnection } from './plus/gk/serverConnection';
 import { IntegrationAuthenticationService } from './plus/integrationAuthentication';
+import { ProviderIntegrationService } from './plus/providers/providerIntegrationService';
 import { SubscriptionService } from './plus/subscription/subscriptionService';
 import { registerAccountWebviewView } from './plus/webviews/account/registration';
 import { registerFocusWebviewCommands, registerFocusWebviewPanel } from './plus/webviews/focus/registration';
@@ -574,6 +575,14 @@ export class Container {
 	@memoize()
 	get prereleaseOrDebugging() {
 		return this._prerelease || this.debugging;
+	}
+
+	private _providers: ProviderIntegrationService | undefined;
+	get providers(): ProviderIntegrationService {
+		if (this._providers == null) {
+			this._providers = new ProviderIntegrationService(this);
+		}
+		return this._providers;
 	}
 
 	private readonly _rebaseEditor: RebaseEditorProvider;
