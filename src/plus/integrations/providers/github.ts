@@ -1,17 +1,24 @@
 import type { AuthenticationSession } from 'vscode';
-import type { Container } from '../../container';
-import type { Account } from '../../git/models/author';
-import type { DefaultBranch } from '../../git/models/defaultBranch';
-import type { IssueOrPullRequest, SearchedIssue } from '../../git/models/issue';
-import type { PullRequest, PullRequestState, SearchedPullRequest } from '../../git/models/pullRequest';
-import type { RepositoryMetadata } from '../../git/models/repositoryMetadata';
-import { log } from '../../system/decorators/log';
-import type { IntegrationAuthenticationProviderDescriptor } from '../integrationAuthentication';
+import type { Container } from '../../../container';
+import type { Account } from '../../../git/models/author';
+import type { DefaultBranch } from '../../../git/models/defaultBranch';
+import type { IssueOrPullRequest, SearchedIssue } from '../../../git/models/issue';
+import type { PullRequest, PullRequestState, SearchedPullRequest } from '../../../git/models/pullRequest';
+import type { RepositoryMetadata } from '../../../git/models/repositoryMetadata';
+import { log } from '../../../system/decorators/log';
+import type { IntegrationAuthenticationProviderDescriptor } from '../authentication/integrationAuthentication';
+import { ProviderId, providersMetadata } from './models';
 import type { RepositoryDescriptor, SupportedProviderIds } from './providerIntegration';
 import { ensurePaidPlan, ProviderIntegration } from './providerIntegration';
+import type { ProvidersApi } from './providersApi';
 
-const authProvider = Object.freeze({ id: 'github', scopes: ['repo', 'read:user', 'user:email'] });
-const enterpriseAuthProvider = Object.freeze({ id: 'github-enterprise', scopes: ['repo', 'read:user', 'user:email'] });
+const metadata = providersMetadata[ProviderId.GitHub];
+const enterpriseMetadata = providersMetadata[ProviderId.GitHubEnterprise];
+const authProvider = Object.freeze({ id: metadata.id, scopes: metadata.scopes });
+const enterpriseAuthProvider = Object.freeze({
+	id: enterpriseMetadata.id,
+	scopes: enterpriseMetadata.scopes,
+});
 
 interface GitHubRepositoryDescriptor extends RepositoryDescriptor {
 	owner: string;
@@ -20,10 +27,10 @@ interface GitHubRepositoryDescriptor extends RepositoryDescriptor {
 
 export class GitHubIntegration extends ProviderIntegration<GitHubRepositoryDescriptor> {
 	readonly authProvider: IntegrationAuthenticationProviderDescriptor = authProvider;
-	readonly id: SupportedProviderIds = 'github';
+	readonly id: SupportedProviderIds = ProviderId.GitHub;
 	readonly name: string = 'GitHub';
 	get domain(): string {
-		return 'github.com';
+		return metadata.domain;
 	}
 
 	protected get apiBaseUrl(): string {
@@ -95,7 +102,7 @@ export class GitHubIntegration extends ProviderIntegration<GitHubRepositoryDescr
 	): Promise<PullRequest | undefined> {
 		const { include, ...opts } = options ?? {};
 
-		const toGitHubPullRequestState = (await import(/* webpackChunkName: "github" */ '../github/models'))
+		const toGitHubPullRequestState = (await import(/* webpackChunkName: "github" */ '../../github/models'))
 			.toGitHubPullRequestState;
 		return (await this.container.github)?.getPullRequestForBranch(
 			this,
@@ -153,7 +160,7 @@ export class GitHubIntegration extends ProviderIntegration<GitHubRepositoryDescr
 
 export class GitHubEnterpriseIntegration extends GitHubIntegration {
 	override readonly authProvider = enterpriseAuthProvider;
-	override readonly id = 'github-enterprise';
+	override readonly id = ProviderId.GitHubEnterprise;
 	override readonly name = 'GitHub Enterprise';
 	override get domain(): string {
 		return this._domain;
@@ -167,9 +174,10 @@ export class GitHubEnterpriseIntegration extends GitHubIntegration {
 
 	constructor(
 		container: Container,
+		override readonly api: ProvidersApi,
 		private readonly _domain: string,
 	) {
-		super(container);
+		super(container, api);
 	}
 
 	@log()

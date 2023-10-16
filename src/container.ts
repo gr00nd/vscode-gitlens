@@ -16,16 +16,18 @@ import { Commands, extensionPrefix } from './constants';
 import { EventBus } from './eventBus';
 import { GitFileSystemProvider } from './git/fsProvider';
 import { GitProviderService } from './git/gitProviderService';
-import { GitHubAuthenticationProvider } from './git/remotes/github';
-import { GitLabAuthenticationProvider } from './git/remotes/gitlab';
 import { RichRemoteProviderService } from './git/remotes/remoteProviderService';
 import { LineHoverController } from './hovers/lineHoverController';
 import type { RepositoryPathMappingProvider } from './pathMapping/repositoryPathMappingProvider';
 import { FocusService } from './plus/focus/focusService';
 import { AccountAuthenticationProvider } from './plus/gk/authenticationProvider';
 import { ServerConnection } from './plus/gk/serverConnection';
-import { IntegrationAuthenticationService } from './plus/integrationAuthentication';
-import { ProviderIntegrationService } from './plus/providers/providerIntegrationService';
+import { AzureDevOpsAuthenticationProvider } from './plus/integrations/authentication/azureDevOps';
+import { BitbucketAuthenticationProvider } from './plus/integrations/authentication/bitbucket';
+import { GitHubAuthenticationProvider } from './plus/integrations/authentication/github';
+import { GitLabAuthenticationProvider } from './plus/integrations/authentication/gitlab';
+import { IntegrationAuthenticationService } from './plus/integrations/authentication/integrationAuthentication';
+import { ProviderIntegrationService } from './plus/integrations/providers/providerIntegrationService';
 import { SubscriptionService } from './plus/subscription/subscriptionService';
 import { registerAccountWebviewView } from './plus/webviews/account/registration';
 import { registerFocusWebviewCommands, registerFocusWebviewPanel } from './plus/webviews/focus/registration';
@@ -528,6 +530,8 @@ export class Container {
 				// Register any integration authentication providers
 				new GitHubAuthenticationProvider(this),
 				new GitLabAuthenticationProvider(this),
+				new AzureDevOpsAuthenticationProvider(this),
+				new BitbucketAuthenticationProvider(this),
 			);
 		}
 
