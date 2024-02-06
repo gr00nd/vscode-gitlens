@@ -15720,7 +15720,7 @@
 		"@vscode/webview-ui-toolkit": "1.2.2",
 		"ansi-regex": "6.0.1",
 		"billboard.js": "3.10.2",
-		"https-proxy-agent": "5.0.1",
+		"https-proxy-agent": "7.0.2",
 		"iconv-lite": "0.6.3",
 		"lit": "3.0.2",
 		"node-fetch": "2.7.0",
