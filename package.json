@@ -15717,7 +15717,7 @@
 		"@opentelemetry/exporter-trace-otlp-http": "0.43.0",
 		"@opentelemetry/sdk-trace-base": "1.17.0",
 		"@vscode/codicons": "0.0.35",
-		"@vscode/webview-ui-toolkit": "1.2.2",
+		"@vscode/webview-ui-toolkit": "1.4.0",
 		"ansi-regex": "6.0.1",
 		"billboard.js": "3.10.2",
 		"https-proxy-agent": "5.0.1",
